@@ -23,7 +23,6 @@ public class Beams {
 			loadData(new URL(
 					"http://www.hep.ucl.ac.uk/undergrad/3459/exam-data/2011-12/midterm/bpm.txt"));
 			nSep();
-			nPar();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -55,16 +54,28 @@ public class Beams {
 		for (Entry<Integer, ArrayList<DataBeam>> e : list.entrySet()) {
 			double sumx=0;
 			double sumy=0;
-			System.out.println(e.getValue().size());
-			System.out.println(e.getKey());
+			double ri=0;
+			double sumR=0;
+			double ris=0;
+			double risF=Double.NEGATIVE_INFINITY;
+			System.out.println("\n"+"The distance of the BPM: "+e.getKey());
+			System.out.println("The number of particles detected at this BPM: "+e.getValue().size());
+
 			for(DataBeam its: e.getValue()){
 				sumx+=its.getX();
 				sumy+=its.getY();
+				ri=Math.pow((its.getX()+(double)(sumx/e.getValue().size())),2)+Math.pow((its.getY()+(double)(sumy/e.getValue().size())), 2);
+				sumR+=ri;
+				ris=Math.sqrt(ri);
+				if(risF<ris){risF=ris;}
 			}
+			
+			System.out.println("The rms is: " +Math.sqrt(sumR/e.getValue().size()));
 			System.out.println("The average of x is: " +sumx/e.getValue().size());
 			System.out.println("The average of y is: " +sumy/e.getValue().size());
 			System.out.println("The sum of X is: "+sumx);
 			System.out.println("The sum of Y is: "+sumy);
+			System.out.println("The biggest radius is: "+ris);
 		}
 	}
 
@@ -79,7 +90,7 @@ public class Beams {
 
 	}
 
-	public static void nPar(){
+	/*public static void nPar(){
 
 		for(DataBeam no : dataList){
 			if(no.getZ()==(int)-0){ zeroc++; sumzx+=no.getX(); sumzy+=no.getY();}
@@ -117,7 +128,7 @@ public class Beams {
 		System.out.println("\n"+"Number of particle at BMP 1000: "+thousc);
 		System.out.println("Average x value is: "+sumthox/thousc+" and average y value is: "+sumthoy/thousc);
 
-	}
+	}*/
 
 }
 
