@@ -39,10 +39,10 @@ public class Beams {
 			String line = scanner.nextLine();
 			dataList.add(new DataBeam(line));
 			DataBeam heya = new DataBeam(line);
-			//seen the Z value before, retrieve all old values and adds heya to the list
+			//seen the Z value before, retrieve all old values and adds the object to the list
 			if (list.containsKey((int)heya.getZ())) {
 				list.get((int)heya.getZ()).add(heya);
-			} else { //unseen z value, new list of
+			} else { //unseen z value, new list of objects associated with that z value, and adds it to to the HashMap
 				ArrayList<DataBeam> tempList = new ArrayList<DataBeam>();
 				tempList.add(heya);
 				list.put((int) heya.getZ(), tempList);
@@ -51,17 +51,17 @@ public class Beams {
 
 
 		}
-		for (Entry<Integer, ArrayList<DataBeam>> e : list.entrySet()) {
+		for (Entry<Integer, ArrayList<DataBeam>> e : list.entrySet()) {//Creates entry interface that iterates over the keys (BPM) that includes a list of DataObject that store (x,y)
 			double sumx=0;
 			double sumy=0;
 			double ri=0;
 			double sumR=0;
 			double ris=0;
 			double risF=Double.NEGATIVE_INFINITY;
-			System.out.println("\n"+"The distance of the BPM: "+e.getKey());
-			System.out.println("The number of particles detected at this BPM: "+e.getValue().size());
+			System.out.println("\n"+"The distance of the BPM: "+e.getKey());//Extracts the key set(BPM)
+			System.out.println("The number of particles detected at this BPM: "+e.getValue().size());//prints how many objects there are in the list for that key
 
-			for(DataBeam its: e.getValue()){
+			for(DataBeam its: e.getValue()){// To go over the individual x and y values of for that key (BPM)
 				sumx+=its.getX();
 				sumy+=its.getY();
 				ri=Math.pow((its.getX()+(double)(sumx/e.getValue().size())),2)+Math.pow((its.getY()+(double)(sumy/e.getValue().size())), 2);
@@ -84,8 +84,8 @@ public class Beams {
 		for (DataBeam data : dataList) {
 			noDup.add((int) data.getZ());
 		}
-		System.out.println(noDup.size());
-		System.out.println(list.keySet());
+		System.out.println("The number of different BPMs is: "+noDup.size());
+		System.out.println("The list of the different BPM distances is: "+list.keySet());
 		//System.out.println(noDup);
 
 	}
