@@ -83,7 +83,7 @@ public class wow {
 			for(DataParticle data: tempList) {//a for loop that goes over the objects stored inside the list(to access the individual values)
 				double[] signalAndBackgroundforTrigger= new double[2];//signal and background count is saved here
 				for (int i=0 ; i<data.matrix.length; ++i) {//for loop that goes over the matrix length of that object. it goes down the rows, first pick the first row, goes over the rest, then second goes oer the rest etc. until the end of matrix is hit
-					for (int j = 0; j < data.matrix.length; ++j) {//this means that when it chooses the first row in the above loop, it goes over all the rest of the rows
+					for (int j = i; j < data.matrix.length; ++j) {//this means that when it chooses the first row in the above loop, it goes over all the rest of the rows
 						if (data.matrix[i][0] != data.matrix[j][0]) {//if the charges are not equal, it pairs them up and calculates the mass
 							double mass = Math.sqrt(calculateInvariantMass(data.matrix[i], data.matrix[j]));
 							if (mass >=8 && mass <=10) {//checks signal region
