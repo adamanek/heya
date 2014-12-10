@@ -9,6 +9,11 @@ import java.util.Map.Entry;
  * @author Adam Suhaj
  *
  */
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.Map.Entry;
+
 public class DataAnalysis {
 
 	public static ArrayList<DataReadings> dataReadings = new ArrayList<>();
@@ -25,9 +30,23 @@ public class DataAnalysis {
 					"http://www.hep.ucl.ac.uk/undergrad/3459/exam-data/2010-11/final/countries.txt"));
 			retreiveStation(new URL(
 					"http://www.hep.ucl.ac.uk/undergrad/3459/exam-data/2010-11/final/stations.txt"));
-			System.out.println(dataReadings.size());
-			System.out.println(sortedReadings.keySet());
+			//System.out.println(dataReadings.size());
+			//System.out.println(sortedReadings.keySet());
+
+			/*
+			 * int check =0, yeear = 0; for (Entry<Integer,
+			 * ArrayList<DataReadings>> d : sortedReadings.entrySet()) { for
+			 * (DataReadings g : dataReadings) { for(int i =0; i<1; i++){ check
+			 * = g.measurements[i]; yeear = d.getKey();
+			 * System.out.println("data "+ check+" "+yeear); } }
+			 * 
+			 * }
+			 */
 			
+			Interface shiggi = new LowestTemp();
+			Interface driggi = new RMS(1966);
+			driggi.lowtemp(dataReadings, sortedStation, sortedCountry);
+			shiggi.lowtemp(dataReadings, sortedStation, sortedCountry);
 			dataWork();
 
 			/*
@@ -35,8 +54,6 @@ public class DataAnalysis {
 			 * sortedReadings.entrySet()){ for(DataReadings g : dataReadings){
 			 * System.out.println("The month "+g.Month); } }
 			 */
-
-		
 
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -47,12 +64,7 @@ public class DataAnalysis {
 		}
 
 	}
-	/**
-	 * 
-	 * @param url
-	 * @throws IOException
-	 * @return 
-	 */
+
 	public static void retreiveReadings(URL url) throws IOException {
 		InputStream is = url.openStream();
 		Scanner sc = new Scanner(is);
@@ -70,13 +82,12 @@ public class DataAnalysis {
 					newlist.add(kozo);
 					sortedReadings.put(kozo.Year, newlist);
 				}
-				if (sortedReadings2.containsKey(kozo.ID)) {
-					sortedReadings2.get(kozo.ID).add(kozo);
-				} else {
-					ArrayList<DataReadings> newlist = new ArrayList<>();
-					newlist.add(kozo);
-					sortedReadings2.put(kozo.ID, newlist);
-				}
+				/*
+				 * if (sortedReadings2.containsKey(kozo.ID)) {
+				 * sortedReadings2.get(kozo.ID).add(kozo); } else {
+				 * ArrayList<DataReadings> newlist = new ArrayList<>();
+				 * newlist.add(kozo); sortedReadings2.put(kozo.ID, newlist); }
+				 */
 			}
 
 		}
@@ -131,11 +142,11 @@ public class DataAnalysis {
 						high = e.measurements[i];
 						year = e.Year;
 						station = sortedStation.get(e.ID);
-						country = sortedCountry.get(e.ID.substring(0, 2));
+						country = sortedCountry.get(e.ID.substring(0, 2));//Task 1
 					}
 				}
 				if (!(e.measurements[i] <= -9999)) {
-					sum += e.measurements[i];
+					sum += e.measurements[i];//Task 2 part 1
 					numvar++;
 				}
 			}
@@ -148,125 +159,123 @@ public class DataAnalysis {
 
 		}
 
-		for (Entry<Integer, ArrayList<DataReadings>> d : sortedReadings.entrySet()) {
-			String yearcountry = "";
-			int yearyear = 0;
-			int yearsum = 0, yearnumvar = 0, yearlowmean = Integer.MAX_VALUE;
-			int uksum = 0, francesum = 0, gersum = 0, swedsum = 0, spainsum = 0;
+		
+
+		/**
+		 * This uses the Hashmap where the key is the year.
+		 * 
+		 */
+
+		for (Entry<Integer, ArrayList<DataReadings>> d : sortedReadings
+				.entrySet()) {
+
 			HashMap<String, DataMean> plez = new HashMap<>();
-			DataMean ukobject = new DataMean(null, 0,0);
-			int uknumval = 0, francenumval = 0, gernumval = 0, swednumval = 0, spainnumval = 0;
-			for (int j = 1; j < 13; j++) {
-				for (DataReadings g : d.getValue()) {
-					if (g.Month == j) {
-						if (g.ID.contains("UK")) {
-							//if(
-							for (int i = 0; i < g.measurements.length; i++) {
-								if (!(g.measurements[i] <= -9999)) {
-									uksum += g.measurements[i];
-									uknumval++;
-								}
-							}
-
-						}
-						if (g.ID.contains("GM")) {
-							for (int i = 0; i < g.measurements.length; i++) {
-								if (!(g.measurements[i] <= -9999)) {
-									gersum += g.measurements[i];
-									gernumval++;
-								}
-							}
-
-						}
-						if (g.ID.contains("SW")) {
-							for (int i = 0; i < g.measurements.length; i++) {
-								if (!(g.measurements[i] <= -9999)) {
-									swedsum += g.measurements[i];
-									swednumval++;
-								}
-							}
-
-						}
-						if (g.ID.contains("SP")) {
-							for (int i = 0; i < g.measurements.length; i++) {
-								if (!(g.measurements[i] <= -9999)) {
-									spainsum += g.measurements[i];
-									spainnumval++;
-								}
-							}
-
-						}
-						if (g.ID.contains("FR")) {
-							for (int i = 0; i < g.measurements.length; i++) {
-								if (!(g.measurements[i] <= -9999)) {
-									francesum += g.measurements[i];
-									francenumval++;
-								}
-							}
-
-						}
-						/*System.out.println("uk sum "+uksum);
-						System.out.println("ger sum "+gersum);
-						System.out.println("swed sum "+swedsum);
-						System.out.println("spain sum "+spainsum);
-						System.out.println("france sum "+francesum);*/
+			//System.out.println("BLA");
+			for (DataReadings g : d.getValue()) {
+				//System.out.println(g.ID + ", " + g.Month + ", " + g.Year);
+				double tempSum = 0;
+				int tempAmount = 0;
+				for (int i = 0; i < g.measurements.length; i++) {
+					if (!(g.measurements[i] <= -9999)) {
+						tempSum += g.measurements[i];
+						tempAmount++;
 					}
-
-					// System.out.println("the year is " + yearyear
-					// + " the mean is " + yearmean);
 				}
-				 System.out.println("The measurement is "+high);
-				 System.out.println("The year of measurement "+year);
-				 System.out.println("The station "+station);
-				 System.out.println("The country "+country);
-				// System.out.println("the lowest mean is " +
-				// mean+" in the "+lowcountry);
+
+				String shortenedId = g.ID.substring(0, 2);
+				if (plez.containsKey(shortenedId)) {
+					plez.get(shortenedId).mean += tempSum;
+					plez.get(shortenedId).number += tempAmount;
+				} else {
+					plez.put(shortenedId, new DataMean(shortenedId, tempSum,
+							tempAmount));
+				}
 
 			}
-			/*double [] sorted = new double[5];
-			for(int i=0; i<5; i++){
-				sorted[0] = uksum/uknumval;
-				sorted[1] = gersum/gernumval;
-				sorted[2] = swedsum/swednumval;
-				sorted[3] = francesum/francenumval;
-				sorted[4] = spainsum/spainnumval;
-
-			}
-			Arrays.sort(sorted);
-			System.out.println(sorted[0]);*/
-			ukobject = new DataMean("UK", uksum, uknumval);
-			DataMean gerobject = new DataMean("GR", gersum, gernumval);
-			DataMean swedobject = new DataMean("SW", swedsum, swednumval);
-			DataMean franceobject = new DataMean("FR", francesum, francenumval);
-			DataMean spainobject = new DataMean("SP", spainsum, spainnumval);
-			plez.put("UK", ukobject);
-			plez.put("GR", gerobject);
-			plez.put("SW", swedobject);
-			plez.put("FR", franceobject);
-			plez.put("SP", spainobject);
-
+			//System.out.println("NEW");
 			double mapmin = 0;
 			double mapinf = Double.POSITIVE_INFINITY;
 			String mapcountry = "";
 
 			for (DataMean m8 : plez.values()) {
 				mapmin = m8.mean / m8.number;
-				//System.out.println(mapmin);
-
 				if (mapmin < mapinf) {
 					mapinf = mapmin;
 					mapcountry = sortedCountry.get(m8.ID.substring(0, 2));
 				}
 
 			}
-			/*System.out.println(plez.keySet());
-			System.out.println(plez.get("UK"));
-			System.out.println(plez.get("GR"));
-			System.out.println(plez.get("SW"));
-			System.out.println(plez.get("FR"));
-			System.out.println(plez.get("SP"));
-			*/System.out.println("for year " + d.getKey()
-					+ " the lowest mean is from country " + mapcountry+"with mean "+mapinf);
+
+			System.out.println("for year " + d.getKey()
+					+ " the lowest mean is from country " + mapcountry
+					+ "with mean " + mapinf);
+
+			/*
+			 * if (g.ID.contains("GM")) { for (int i = 0; i <
+			 * g.measurements.length; i++) { if (!(g.measurements[i] <= -9999))
+			 * { gersum += g.measurements[i]; gernumval++; } }
+			 * 
+			 * } if (g.ID.contains("SW")) { for (int i = 0; i <
+			 * g.measurements.length; i++) { if (!(g.measurements[i] <= -9999))
+			 * { swedsum += g.measurements[i]; swednumval++; } }
+			 * 
+			 * } if (g.ID.contains("SP")) { for (int i = 0; i <
+			 * g.measurements.length; i++) { if (!(g.measurements[i] <= -9999))
+			 * { spainsum += g.measurements[i]; spainnumval++; } }
+			 * 
+			 * } if (g.ID.contains("FR")) { for (int i = 0; i <
+			 * g.measurements.length; i++) { if (!(g.measurements[i] <= -9999))
+			 * { francesum += g.measurements[i]; francenumval++; } }
+			 * 
+			 * } /*System.out.println("uk sum "+uksum);
+			 * System.out.println("ger sum "+gersum);
+			 * System.out.println("swed sum "+swedsum);
+			 * System.out.println("spain sum "+spainsum);
+			 * System.out.println("france sum "+francesum);
+			 */
+			// }
+
+			// System.out.println("the year is " + yearyear
+			// + " the mean is " + yearmean);
+			// }
+
+			//System.out.println("the lowest mean is " +
+			//mean+" in the "+lowcountry);
+
 		}
+		System.out.println("The measurement is "+high);
+		System.out.println("The year of measurement "+year);
+		System.out.println("The station "+station);
+		System.out.println("The country "+country);
+		/*
+		 * HashMap<String, DataMean> plez = new HashMap<>(); DataMean ukobject =
+		 * new DataMean("UK", uksum, uknumval); DataMean gerobject = new
+		 * DataMean("GR", gersum, gernumval); DataMean swedobject = new
+		 * DataMean("SW", swedsum, swednumval); DataMean franceobject = new
+		 * DataMean("FR", francesum, francenumval); DataMean spainobject = new
+		 * DataMean("SP", spainsum, spainnumval); plez.put("UK", ukobject);
+		 * plez.put("GR", gerobject); plez.put("SW", swedobject); plez.put("FR",
+		 * franceobject); plez.put("SP", spainobject);
+		 * 
+		 * double mapmin = 0; double mapinf = Double.POSITIVE_INFINITY; String
+		 * mapcountry = "";
+		 * 
+		 * for (DataMean m8 : plez.values()) { mapmin = m8.mean / m8.number; if
+		 * (mapmin < mapinf) { mapinf = mapmin; mapcountry =
+		 * sortedCountry.get(m8.ID.substring(0, 2)); }
+		 * 
+		 * }
+		 */
+		/*
+		 * System.out.println(plez.keySet());
+		 * System.out.println(plez.get("UK"));
+		 * System.out.println(plez.get("GR"));
+		 * System.out.println(plez.get("SW"));
+		 * System.out.println(plez.get("FR"));
+		 * System.out.println(plez.get("SP")); System.out.println("for year " +
+		 * d.getKey() + "the lowest mean is from country " +
+		 * mapcountry+"with mean "+mapinf);
+		 */
+
 	}
 }
